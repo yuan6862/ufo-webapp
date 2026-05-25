@@ -22,21 +22,14 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Train model & show accuracy
+        run: python train_model.py
+
       - name: Check backend syntax
         run: python -m py_compile backend.py && echo "backend.py OK"
 
       - name: Check frontend syntax
         run: python -m py_compile frontend.py && echo "frontend.py OK"
-
-      - name: Verify model loads correctly
-        run: |
-          python - <<'EOF'
-          import pickle, numpy as np
-          model = pickle.load(open("ufo-model.pkl", "rb"))
-          result = model.predict([[50, 44, -12]])[0]
-          countries = ["Australia", "Canada", "Germany", "UK", "US"]
-          print(f"Model OK — test prediction: {countries[result]}")
-          EOF
 
       - name: Start backend and health check
         run: |
