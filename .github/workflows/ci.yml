@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Check backend syntax
+        run: python -m py_compile backend.py && echo "backend.py OK"
+
+      - name: Check frontend syntax
+        run: python -m py_compile frontend.py && echo "frontend.py OK"
+
+      - name: Verify model loads correctly
+        run: |
+          python - <<'EOF'
+          import pickle, numpy as np
+          model = pickle.load(open("ufo-model.pkl", "rb"))
+          result = model.predict([[50, 44, -12]])[0]
+          countries = ["Australia", "Canada", "Germany", "UK", "US"]
+          print(f"Model OK — test prediction: {countries[result]}")
+          EOF
+
+      - name: Start backend and health check
+        run: |
+          uvicorn backend:app --host 0.0.0.0 --port 8000 &
+          sleep 3
+          curl -f http://localhost:8000/ | python -m json.tool
+          kill %1
