@@ -37,3 +37,37 @@ jobs:
           sleep 3
           curl -f http://localhost:8000/ | python -m json.tool
           kill %1
+
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build images and start the stack
+        run: docker compose up -d --build
+
+      - name: Wait for backend, then health check
+        run: |
+          for i in $(seq 1 20); do
+            curl -fs http://localhost:8000/ >/dev/null && break
+            sleep 3
+          done
+          curl -f http://localhost:8000/ | python3 -m json.tool
+
+      - name: Wait for frontend, then health check
+        run: |
+          for i in $(seq 1 20); do
+            curl -fs http://localhost:8501/_stcore/health >/dev/null && break
+            sleep 3
+          done
+          curl -f http://localhost:8501/_stcore/health
+
+      - name: Show logs on success
+        if: always()
+        run: docker compose logs --tail=50
+
+      - name: Tear down
+        if: always()
+        run: docker compose down

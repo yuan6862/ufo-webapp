@@ -1,0 +1,21 @@
+# Runs the whole UFO app with one command: docker compose up --build
+# Backend on :8000, frontend on :8501. The frontend reaches the backend by its
+# service name ("backend") over the compose network.
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    environment:
+      - BACKEND_URL=http://backend:8000
+    ports:
+      - "8501:8501"
+    depends_on:
+      - backend

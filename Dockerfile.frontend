@@ -1,0 +1,17 @@
+# Frontend image: Streamlit UI that calls the backend over BACKEND_URL.
+FROM python:3.10-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+# Default points at the backend service name on the docker-compose network.
+# Override at run time for a cloud VM, e.g. -e BACKEND_URL=http://1.2.3.4:8000
+ENV BACKEND_URL=http://backend:8000
+
+EXPOSE 8501
+CMD ["streamlit", "run", "frontend.py", \
+     "--server.port=8501", "--server.address=0.0.0.0"]

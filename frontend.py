@@ -1,7 +1,11 @@
+import os
+
 import streamlit as st
 import requests
 
-BACKEND_URL = "http://localhost:8000"
+# Read from env so the same code works locally, in Docker, and on a cloud VM.
+# Local default talks to a backend on the same machine.
+BACKEND_URL = os.environ.get("BACKEND_URL", "http://localhost:8000")
 
 st.set_page_config(page_title="UFO Sighting Predictor", page_icon="🛸")
 
