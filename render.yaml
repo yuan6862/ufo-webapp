@@ -1,0 +1,14 @@
+# Render Blueprint — deploys the UFO app as a single free web service.
+# In the Render dashboard: New + -> Blueprint -> pick this repo.
+services:
+  - type: web
+    name: ufo-webapp
+    runtime: python
+    plan: free
+    # Retrain on the installed scikit-learn version so the pickle always loads
+    # cleanly (avoids version-mismatch errors at runtime).
+    buildCommand: "pip install -r requirements.txt && python train_model.py"
+    startCommand: "bash start.sh"
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
