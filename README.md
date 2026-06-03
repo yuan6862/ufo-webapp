@@ -6,6 +6,31 @@ was reported from, based on the sighting's duration and geographic coordinates.
 Originally a Flask app, **migrated to FastAPI + Uvicorn** with a Streamlit
 frontend, and containerized with Docker.
 
+## 🚀 Quick Start
+
+The trained model (`ufo-model.pkl`) is included, so no training is needed.
+
+**Option A — Docker (one command):**
+
+```bash
+git clone https://github.com/yuan6862/ufo-webapp
+cd ufo-webapp
+docker compose up --build
+```
+
+**Option B — without Docker (two terminals):**
+
+```bash
+git clone https://github.com/yuan6862/ufo-webapp
+cd ufo-webapp
+pip install -r requirements.txt
+uvicorn backend:app --port 8000      # Terminal 1
+streamlit run frontend.py            # Terminal 2
+```
+
+Then open **http://localhost:8501**. Backend docs at http://localhost:8000/docs.
+Full details below.
+
 - **Backend:** FastAPI + Uvicorn (REST `/predict` endpoint)
 - **Frontend:** Streamlit
 - **Model:** Logistic Regression (scikit-learn), ~96% accuracy
